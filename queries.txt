@@ -1,0 +1,52 @@
+/*QUERY 1 - used for the first insight */ 
+SELECT g.Name AS genre, COUNT(t.Milliseconds/60000) AS minutes_played
+FROM Genre AS g
+JOIN Track AS t
+ON g.GenreId = t.GenreId
+GROUP BY 1
+ORDER By 2 DESC;
+
+
+
+/*QUERY 2 - used for the second insight */ 
+SELECT g.Name AS genre, STRFTIME('%Y-%m-%d',i.InvoiceDate) AS date, COUNT(t.Milliseconds/60000) AS duration ,ROUND(SUM(i.Total),2) AS total_invoices 
+FROM Genre AS g
+JOIN Track AS t
+ON g.GenreId = t.GenreId
+JOIN InvoiceLine AS il
+ON t.TrackId = il.TrackId
+JOIN Invoice AS i
+on i.InvoiceId = il.InvoiceId
+WHERE genre = 'Rock'
+GROUP BY 2
+ORDER By 2, 3 DESC
+
+
+
+
+/*QUERY 3 - used for the third insight */ 
+SELECT a.Name AS artist, Album.Title AS album, m.Name AS media , COUNT(t.Milliseconds/60000) AS duration, ROUND(SUM(i.Total),2) AS total_invoice
+FROM Artist AS a 
+JOIN Album
+ON a.ArtistId = Album.ArtistId
+JOIN Track AS t
+ON t.AlbumId = Album.AlbumId
+JOIN MediaType AS m
+ON m.MediaTypeId = t.MediaTypeId
+JOIN InvoiceLine AS il
+ON t.TrackId = il.TrackId
+JOIN Invoice AS i
+on i.InvoiceId = il.InvoiceId
+GROUP BY 1,2
+ORDER BY 3 DESC,4 DESC;
+
+
+
+
+/*QUERY 4 - used for the fourth insight */ 
+SELECT c.Country AS customer_country, ROUND(SUM(i.Total),2) AS total_invoices
+FROM Customer AS c
+JOIN Invoice AS i 
+ON c.CustomerId = i.CustomerId
+GROUP BY 1
+ORDER BY 2 DESC;
